@@ -18,7 +18,7 @@ function start(){
 }
 start();
 
-
+let a = document.getElementById("title");
 
 let appDate = {
     budget: money,
