@@ -37,7 +37,7 @@ window.addEventListener('DOMContentLoaded', function(){
 
     //timer
 
-    let deadLine = '2021-07-31';
+    let deadLine = '2022-08-03';
 
     function getTimeRemaining(endtime) {
         let t = Date.parse(endtime) - Date.parse(new Date()),
@@ -93,4 +93,80 @@ window.addEventListener('DOMContentLoaded', function(){
         more.classList.remove('more-splash');
         document.body.style.overflow = '';
     });
+
+
+
+    class Options {
+        constructor(height, width, bg, fontSize, textAlign) {
+            this.height = height;
+            this.width = width;
+            this.bg = bg;
+            this.fontSize = fontSize;
+            this.textAlign = textAlign;
+        }
+    
+        createDiv() {
+            let elem = document.createElement('div');
+            document.body.appendChild(elem);
+            let param = `height:${this.height}px; width:${this.width}px; background-color:${this.bg}; font-size:${this.fontSize}px; text-align:${this.textAlign}`;
+            elem.style.cssText = param;
+        }
+    }
+    
+    const item = new Options(300, 350, "red", 14, "center");
+    
+    item.createDiv();
+
+    // form
+
+    let message = {
+        loading: 'Загрузка...',
+        success: 'Спасибо! Скоро мы с вами свяжемся!',
+        failure: 'Что-то пошло не так...'
+    };
+
+    let form = document.querySelector('.main-form'),
+        input = form.getElementsByTagName('input'),
+        statusMessage = document.createElement('div');
+
+        statusMessage.classList.add('status');
+
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        form.appendChild(statusMessage);
+
+        let request = new XMLHttpRequest();
+        request.open('POST', 'server.php');
+        request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+
+        let formData = new FormData(form);
+
+        let obj = {};
+        formData.forEach(function(value, key){
+            obj[key] = value;
+        });
+        let json = JSON.stringify(obj);
+
+        request.send(json);
+
+
+        request.addEventListener('readystatechange', function(){
+            if(request.readyState < 4){
+                statusMessage.innerHTML = message.loading;
+            }else if (request.readyState === 4 && request.status == 200){
+                statusMessage.innerHTML = message.success;
+            }else {
+                statusMessage.innerHTML = message.failure;
+            }
+        });
+
+        for(let i = 0; i< input.length; i++){
+            input[i].value = '';
+        }
+
+    });
+
+
+
+
 });
